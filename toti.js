@@ -45,15 +45,15 @@ GameLoop();
     console.log(randomX)
     _line = new Line(randomX,WIDTH,randomX+30,15);
     lines.push(_line);
-    _line2 = new Line(randomX+300,WIDTH,randomX+300+30,15);
+    _line2 = new Line(randomX+200,WIDTH,randomX+200+30,15);
     lines.push(_line2);
 
     //EACH TICK FOR GAME
     setInterval(function(){ 
-        
+        ClearCanvas();
         for(i=0;i<lines.length;i++){
             //TODO 
-            ClearCanvas();
+            
             lines[i].y += 10;
             lines[i].startY += 10;
             DrawLine(lines[i].x,lines[i].y,lines[i].startX,lines[i].startY)
@@ -83,7 +83,7 @@ function CheckPoint(playerX,PlayerY,ActiveLines){
 
 
 function ClearCanvas(){
-
+    
     context.clearRect(0, 0, canvas.width, canvas.height);
 }    
  
