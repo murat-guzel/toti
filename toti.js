@@ -2,6 +2,7 @@ const HEIGHT = 1;
 const WIDTH = 15;
 var canvas;
 var context;
+var player;
 var playerX =0;
 var playerY =0;
 var lines = [];
@@ -17,6 +18,19 @@ class Line{
             this.startX = startX;
             this.startY = startY;
         }
+
+}
+class Player{
+
+    x = 0;
+    y = 0;
+    point = 0;
+        constructor(x,y,point){
+            this.x = x;
+            this.y = y;
+            this.point = point;
+        }
+
 
 }
 
@@ -39,12 +53,13 @@ GameLoop();
         
         for(i=0;i<lines.length;i++){
             //TODO 
-            //ClearCanvas();
+            ClearCanvas();
             lines[i].y += 10;
             lines[i].startY += 10;
             DrawLine(lines[i].x,lines[i].y,lines[i].startX,lines[i].startY)
             DrawPlayer(playerX,playerY);
             CheckPoint(playerX,playerY,lines)
+            
         }
             
         
@@ -56,11 +71,11 @@ GameLoop();
 function CheckPoint(playerX,PlayerY,ActiveLines){
 
     for(i=0;i<ActiveLines.length;i++){
-        console.log("ActiveLines[i].x "+ActiveLines[i].x)
-        console.log("playerX "+playerX)
-        if( Math.abs(ActiveLines[i].x - playerX)<20  ){
+        if( (Math.abs(ActiveLines[i].x - playerX)<20) && (Math.abs(ActiveLines[i].y - playerY)<20)  ){
                 
-                console.log("crach")
+           player.point++;    
+           document.getElementById("point").innerHTML = player.point-2;
+ 
         }
     }
 
@@ -86,6 +101,7 @@ function PreparePlayer(){
     setTimeout(() => {
         playerX = canvas.width / 2;
         playerY = canvas.height - (canvas.height / 12);
+        player = new Player(playerX,playerY,0);
     }, 1000);
     
 }
