@@ -27,28 +27,50 @@ GameLoop();
  function GameLoop(){
     GetContext();
     PreparePlayer();
-    _line = new Line(0,WIDTH,30,WIDTH);
+    var randomX = Math.floor(Math.random() * 100); 
+    console.log(randomX)
+    _line = new Line(randomX,WIDTH,randomX+30,15);
     lines.push(_line);
+    _line2 = new Line(randomX+300,WIDTH,randomX+300+30,15);
+    lines.push(_line2);
 
     //EACH TICK FOR GAME
     setInterval(function(){ 
         
         for(i=0;i<lines.length;i++){
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            lines[i].y += 20;
-            lines[i].startY += 20;
+            //TODO 
+            //ClearCanvas();
+            lines[i].y += 10;
+            lines[i].startY += 10;
             DrawLine(lines[i].x,lines[i].y,lines[i].startX,lines[i].startY)
             DrawPlayer(playerX,playerY);
-            
+            CheckPoint(playerX,playerY,lines)
         }
             
         
-    }, 500);
+    }, 100);
 
 
  }
 
-    
+function CheckPoint(playerX,PlayerY,ActiveLines){
+
+    for(i=0;i<ActiveLines.length;i++){
+        console.log("ActiveLines[i].x "+ActiveLines[i].x)
+        console.log("playerX "+playerX)
+        if( Math.abs(ActiveLines[i].x - playerX)<20  ){
+                
+                console.log("crach")
+        }
+    }
+
+}
+
+
+function ClearCanvas(){
+
+    context.clearRect(0, 0, canvas.width, canvas.height);
+}    
  
 
 function GetContext(){
@@ -96,13 +118,13 @@ function DrawLine(x,y,startX,startY){
  document.addEventListener('keydown', function(event) {
     //left
     if(event.keyCode == 37) {
-        playerX = playerX-10
+        playerX = playerX-15
         DrawPlayer(playerX);
     }
      
     //right
     else if(event.keyCode == 39) {
-        playerX = playerX+10
+        playerX = playerX+15
         DrawPlayer(playerX);
         
     } 
