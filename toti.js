@@ -1,12 +1,12 @@
 const HEIGHT = 1;
-const WIDTH = 15;
+const WIDTH = 0;
 var canvas;
 var context;
 var players = [];
 var playerX =0;
 var playerY =0;
 var lines = [];
-const TOTAL = 20; 
+const TOTAL = 40; 
 
 
 class Line{
@@ -28,26 +28,26 @@ class Player{
     y = 0;
     point = 0;
 
-        constructor(x,y,point){
+        constructor(x,y,point,brain){
             this.x = x;
             this.y = y;
             this.point = point;
             //inputs:
             // playerX 
             // closestLine.x , closestLine.y
-            this.brain = new NeuralNetwork(3,4,3);
+            this.brain = brain ? brain.copy() : new NeuralNetwork(3,4,3);
         }
 
         MoveLeft(){
 
-            player.x = player.x-15;   
-            DrawPlayer(player.x);
+            this.x = this.x-30;   
+            DrawPlayer(this.x);
         
         }
         MoveRight(){
         
-            player.x = player.x+15
-            DrawPlayer(player.x);
+            this.x = this.x+30
+            DrawPlayer(this.x);
         
         }
         
@@ -56,14 +56,30 @@ class Player{
             const inputs = [this.x,_line.x,_line.y];
             const result = this.brain.predict(inputs);
             if(result[0] == Math.max(...result))
-                player.MoveLeft();
+                this.MoveLeft();
             if(result[1] == Math.max(...result))
-                player.MoveRight();
-            if(player.x< 0)
-                player.x = 0;
-            if (player.x > canvas.width)
-                player.x = 300;
-        }        
+                this.MoveRight();
+            if(this.x< 0)
+                this.x = 0;
+            if (this.x > canvas.width)
+                this.x = canvas.width;
+        }   
+        
+        mutate = () => {
+
+            this.brain.mutate((x) => {
+
+        
+            if (Math.random() < 0.1) {
+                let offset = Math.random() * 0.5;
+                let newx = x + offset;
+                return newx;
+            } else {
+                return x;
+            }
+          
+            });
+        }
 
       
 
@@ -71,11 +87,26 @@ class Player{
 
 //starting game ...
 GameLoop();
-
+PreparePlayer();
+setInterval(function(){
+    lines = [];
+    players.sort((a,b) => (a.point > b.point) ? -1 : ((b.point > a.point) ? 1 : 0)); 
+    console.log("retry")
+    console.log("big point"+players[0].point)
+    const strongest = players[0];
+    strongest.mutate();
+    players = [];
+    
+    PreparePlayer(strongest.brain);
+    
  
+
+},30000)
+
+
+    
  function GameLoop(){
     GetContext();
-    PreparePlayer();
     
     
    
@@ -84,7 +115,7 @@ GameLoop();
     setInterval(function(){ 
         ClearCanvas();
         var randomX = Math.floor(Math.random() * 500) + 3; 
-        _line = new Line(randomX,WIDTH,randomX+30,15);
+        _line = new Line(randomX,WIDTH,randomX+30,0);
         lines.push(_line);
         
         for(i=0;i<lines.length;i++){
@@ -96,7 +127,7 @@ GameLoop();
             for(let j=0 ; j<players.length ; j++){
                 players[j].think();
                 DrawPlayer(players[j].x,players[j].y);
-                CheckPoint(players[j].x,players[j].y,lines)
+                CheckPoint(players[j],lines)
                 
             }
         }
@@ -107,18 +138,17 @@ GameLoop();
 
  }
 
-function CheckPoint(playerX,PlayerY,ActiveLines){
+function CheckPoint(ActivePlayer,ActiveLines){
     
     for(i=0;i<ActiveLines.length;i++){
          
-        if( (Math.abs(ActiveLines[i].x - player.x)<20) && (Math.abs(ActiveLines[i].y - player.y)<20)  ){
+        if( (Math.abs(ActiveLines[i].x - ActivePlayer.x)<20) && (Math.abs(ActiveLines[i].y - ActivePlayer.y)<20)  ){
                 
-           player.point++;    
+           ActivePlayer.point++;    
            document.getElementById("point").innerHTML = player.point-2;
  
         }
         if(ActiveLines[i].y > 300){
-            console.log(i);
             ActiveLines.splice(i, 1);
 
         }
@@ -144,7 +174,7 @@ function GetContext(){
 
 }
 
-function PreparePlayer(){
+function PreparePlayer(brain){
     setTimeout(() => {
         for(let i=0;i<TOTAL;i++){
             var randomNum = Math.floor(Math.random() * 500) + 3;
