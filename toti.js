@@ -6,7 +6,7 @@ var players = [];
 var playerX =0;
 var playerY =0;
 var lines = [];
-const TOTAL = 40; 
+const TOTAL = 50; 
 
 
 class Line{
@@ -35,26 +35,32 @@ class Player{
             //inputs:
             // playerX 
             // closestLine.x , closestLine.y
-            this.brain = brain ? brain.copy() : new NeuralNetwork(3,4,3);
+            if (brain) {
+                this.brain = brain.copy();
+                this.mutate();
+              } else {
+                this.brain = new NeuralNetwork(4, 1, 3);
+              }
         }
 
         MoveLeft(){
 
-            this.x = this.x-30;   
+            this.x = this.x-20;   
             DrawPlayer(this.x);
         
         }
         MoveRight(){
         
-            this.x = this.x+30
+            this.x = this.x+20
             DrawPlayer(this.x);
         
         }
         
         think(){
         
-            const inputs = [this.x,_line.x,_line.y];
+            const inputs = [this.x/canvas.width,this.y/canvas.height,_line.x/canvas.width,_line.y/canvas.height];
             const result = this.brain.predict(inputs);
+            // console.log(inputs)
             if(result[0] == Math.max(...result))
                 this.MoveLeft();
             if(result[1] == Math.max(...result))
@@ -90,33 +96,26 @@ GameLoop();
 PreparePlayer();
 setInterval(function(){
     lines = [];
-    players.sort((a,b) => (a.point > b.point) ? -1 : ((b.point > a.point) ? 1 : 0)); 
-    console.log("retry")
-    console.log("big point"+players[0].point)
-    const strongest = players[0];
-    strongest.mutate();
-    players = [];
-    
-    PreparePlayer(strongest.brain);
+    GenerateRandomLine();
+      
+    PreparePlayer(pickOne().brain);
     
  
 
-},30000)
+},10000)
 
 
     
  function GameLoop(){
     GetContext();
-    
+    GenerateRandomLine();
     
    
 
     //EACH TICK FOR GAME
     setInterval(function(){ 
         ClearCanvas();
-        var randomX = Math.floor(Math.random() * 500) + 3; 
-        _line = new Line(randomX,WIDTH,randomX+30,0);
-        lines.push(_line);
+       
         
         for(i=0;i<lines.length;i++){
             //TODO 
@@ -138,18 +137,38 @@ setInterval(function(){
 
  }
 
+ function pickOne () {
+     if(!players.length)
+        return;
+    let index = 0;
+    let r = Math.random();
+    while (r > 0) {
+      r -= players[index].point/1000;
+      index += 1;
+    }
+    index -= 1;
+    return this.players[index];
+  }
+
+function GenerateRandomLine(){
+    var randomX = Math.floor(Math.random() * 500) + 3; 
+    _line = new Line(randomX,WIDTH,randomX+30,0);
+    lines.push(_line);
+}
+
 function CheckPoint(ActivePlayer,ActiveLines){
     
     for(i=0;i<ActiveLines.length;i++){
          
         if( (Math.abs(ActiveLines[i].x - ActivePlayer.x)<20) && (Math.abs(ActiveLines[i].y - ActivePlayer.y)<20)  ){
                 
-           ActivePlayer.point++;    
+           (ActivePlayer.point++)/1000;    
            document.getElementById("point").innerHTML = player.point-2;
  
         }
         if(ActiveLines[i].y > 300){
-            ActiveLines.splice(i, 1);
+            lines.splice(i, 1);
+            GenerateRandomLine();
 
         }
             
