@@ -41,16 +41,17 @@ GameLoop();
  function GameLoop(){
     GetContext();
     PreparePlayer();
-    var randomX = Math.floor(Math.random() * 100); 
-    console.log(randomX)
-    _line = new Line(randomX,WIDTH,randomX+30,15);
-    lines.push(_line);
-    _line2 = new Line(randomX+200,WIDTH,randomX+200+30,15);
-    lines.push(_line2);
+    
+    
+    
 
     //EACH TICK FOR GAME
     setInterval(function(){ 
         ClearCanvas();
+        var randomX = Math.floor(Math.random() * 500) + 3; 
+       
+        _line = new Line(randomX,WIDTH,randomX+30,15);
+        lines.push(_line);
         for(i=0;i<lines.length;i++){
             //TODO 
             
@@ -69,14 +70,22 @@ GameLoop();
  }
 
 function CheckPoint(playerX,PlayerY,ActiveLines){
-
+    
     for(i=0;i<ActiveLines.length;i++){
+         
         if( (Math.abs(ActiveLines[i].x - playerX)<20) && (Math.abs(ActiveLines[i].y - playerY)<20)  ){
                 
            player.point++;    
            document.getElementById("point").innerHTML = player.point-2;
  
         }
+        if(ActiveLines[i].y > 300){
+            console.log(i);
+            ActiveLines.splice(i, 1);
+
+        }
+            
+
     }
 
 }
