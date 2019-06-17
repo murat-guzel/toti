@@ -12,3 +12,4 @@ This is a game based on an artificial neural network.
 - Super bird has the ability to collect all the lines.
 
 
+![](toti.gif)
