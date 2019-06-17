@@ -1,5 +1,5 @@
 # toti
-Toti is a game about neuralnetwork with tensorflow.js
+Toti is a game about neuralnetwork with brain.js
 
 
 This is a game based on an artificial neural network.
